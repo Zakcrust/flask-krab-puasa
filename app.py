@@ -2,11 +2,14 @@ from flask import Flask, send_file
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw 
-from datetime import date
+from datetime import datetime
+import pytz
 
 app = Flask(__name__)
 
-START_DATE = date(2021, 4, 12)
+TZ = pytz.timezone("Asia/Jakarta")
+
+START_DATE = datetime(2021, 4, 12, tzinfo=TZ)
 FONT_PATH = "./NotoSans-Bold.ttf"
 BASE_IMAGE_PATH = "./images/base_image.jpg"
 SAVE_IMAGE_PATH = "./images"
@@ -14,7 +17,10 @@ SAVE_IMAGE_PATH = "./images"
 
 @app.route("/", methods=["GET"])
 def index():
-    day_difference = (date.today() - START_DATE).days
+    now = datetime.now(tz=TZ)
+    print("Now datetime")
+    print(now)
+    day_difference = (now - START_DATE).days
     filename = f"{SAVE_IMAGE_PATH}/hari_{day_difference}.jpg"
     try:
         with open(filename) as f:
