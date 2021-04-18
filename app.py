@@ -17,22 +17,38 @@ SAVE_IMAGE_PATH = "./images"
 
 @app.route("/", methods=["GET"])
 def index():
-    now = datetime.now(tz=TZ)
-    print("Now datetime")
-    print(now)
-    day_difference = (now - START_DATE).days
-    filename = f"{SAVE_IMAGE_PATH}/hari_{day_difference}.jpg"
+    day = (datetime.now(tz=TZ) - START_DATE).days
+    return get_image_response(day)
+
+
+@app.route("/<day>", methods=["GET"])
+def custom(day):
+    try:
+        day = int(day)
+        print('The variable a number')
+    except:
+        day = 1
+        print('The variable is not a number')
+    if day < 0:
+        day = 1
+    elif day > 1000:
+        day = 1000
+    return get_image_response(day)
+
+
+def get_image_response(day):
+    filename = f"{SAVE_IMAGE_PATH}/hari_{day}.jpg"
     try:
         with open(filename) as f:
             print("File already exist")
     except IOError:
         print("File didnt exist, creating new one...")
-        create_new_image(filename, day_difference)
+        create_new_image(filename, day)
     
     return send_file(filename, mimetype="image/jpg")
 
 
-def create_new_image(filename, day_difference):  
+def create_new_image(filename, day):  
     print("Loading Base Image...")
     img = Image.open(BASE_IMAGE_PATH)
     draw = ImageDraw.Draw(img)
@@ -41,13 +57,15 @@ def create_new_image(filename, day_difference):
     font = ImageFont.truetype(FONT_PATH, 35, encoding="unic")
     
     top_text = "PUASA"
-    bottom_text = f"HARI KE {day_difference}"
+    bottom_text = f"HARI KE {day}"
     fill_color = (255, 255, 255)
     stroke_color = (0, 0, 0)
     
     print("Adding Texts...")
+    offset = len(str(day)) * 10
+    print("Len", len(str(day)))
     draw.text((175, 0), top_text, font=font, fill=fill_color, stroke_width=4, stroke_fill=stroke_color)
-    draw.text((150, 310), bottom_text, font=font, fill=fill_color, stroke_width=4, stroke_fill=stroke_color)
+    draw.text((145 - offset, 310), bottom_text, font=font, fill=fill_color, stroke_width=4, stroke_fill=stroke_color)
     
     print("Saving Images...")
     img.save(filename)
