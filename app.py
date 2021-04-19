@@ -12,7 +12,7 @@ TZ = pytz.timezone("Asia/Jakarta")
 START_DATE = datetime(2021, 4, 12, tzinfo=TZ)
 FONT_PATH = "./NotoSans-Bold.ttf"
 BASE_IMAGE_PATH = "./images/base_image.jpg"
-SAVE_IMAGE_PATH = "./images"
+SAVE_IMAGE_PATH = "./images/result.jpg"
 
 
 @app.route("/", methods=["GET"])
@@ -23,32 +23,15 @@ def index():
 
 @app.route("/<day>", methods=["GET"])
 def custom(day):
-    try:
-        day = int(day)
-        print('The variable a number')
-    except:
-        day = 1
-        print('The variable is not a number')
-    if day < 0:
-        day = 1
-    elif day > 1000:
-        day = 1000
     return get_image_response(day)
 
 
 def get_image_response(day):
-    filename = f"{SAVE_IMAGE_PATH}/hari_{day}.jpg"
-    try:
-        with open(filename) as f:
-            print("File already exist")
-    except IOError:
-        print("File didnt exist, creating new one...")
-        create_new_image(filename, day)
-    
-    return send_file(filename, mimetype="image/jpg")
+    create_new_image(day)
+    return send_file(SAVE_IMAGE_PATH, mimetype="image/jpg")
 
 
-def create_new_image(filename, day):  
+def create_new_image(day):  
     print("Loading Base Image...")
     img = Image.open(BASE_IMAGE_PATH)
     draw = ImageDraw.Draw(img)
@@ -62,13 +45,13 @@ def create_new_image(filename, day):
     stroke_color = (0, 0, 0)
     
     print("Adding Texts...")
-    offset = len(str(day)) * 10
+    offset = len(str(day)) * 8
     print("Len", len(str(day)))
     draw.text((175, 0), top_text, font=font, fill=fill_color, stroke_width=4, stroke_fill=stroke_color)
     draw.text((145 - offset, 310), bottom_text, font=font, fill=fill_color, stroke_width=4, stroke_fill=stroke_color)
     
     print("Saving Images...")
-    img.save(filename)
+    img.save(SAVE_IMAGE_PATH)
 
 
 @app.after_request
