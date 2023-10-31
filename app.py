@@ -39,7 +39,7 @@ def create_new_image(day):
     print("Loading Fonts...")
     font = ImageFont.truetype(FONT_PATH, 35, encoding="unic")
     
-    top_text = "PUASA"
+    top_text = "NNN"
     bottom_text = f"HARI KE {day}"
     fill_color = (255, 255, 255)
     stroke_color = (0, 0, 0)
